@@ -13,18 +13,17 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <link href="assets/css/bootstrap.css" rel="stylesheet">
-    <link href="assets/css/order.css" rel="stylesheet">
+    <link href="../assets/css/bootstrap.css" rel="stylesheet">
+    <link href="../assets/css/order.css" rel="stylesheet">
     <style>
         body {
             padding-top: 60px;
         }
     </style>
-    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="../assets/css/bootstrap-responsive.css" rel="stylesheet">
 </head>
 
 <body>
-
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
@@ -37,13 +36,26 @@
 </div>
 
 <div class="container">
-
     <h1>Order Processing</h1>
 
-    <p>Please select one of the following links:</p>
-    <a href="setup.jsp">Setup</a> - Sets up the application with some sample data<br/>
-    <a href="order-processing">Index</a> - Start the application<br/>
+    <h2>Seeded Database with the Following orders</h2>
+    <table width="1000">
+        <tr>
+            <td><b>Property Name</b></td>
+            <td><b>Borrower Name</b></td>
+            <td><b>Product Type</b></td>
+        </tr>
+        <c:forEach items="${requestScope.orders}" var="order">
+            <tr>
+                <td>${ order.propertyName }</td>
+                <td>${ order.borrowerName }</td>
+                <td>${ order.productType }</td>
+            </tr>
+        </c:forEach>
+    </table>
 
+    <h2>Continue</h2>
+    <a href="/">Go to main app</a>
 </div>
 </body>
 </html>

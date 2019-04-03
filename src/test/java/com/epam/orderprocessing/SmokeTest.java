@@ -16,7 +16,7 @@ public class SmokeTest {
 
         assertThat(homePage, containsString("Please select one of the following links:"));
 
-        String setupPage = restTemplate.getForObject(url("/setup.jsp"), String.class);
+        String setupPage = restTemplate.getForObject(url("/setup"), String.class);
 
         assertThat(setupPage, containsString("2834 Dawson Drive, Jacksonville, AR 72099"));
         assertThat(setupPage, containsString("Elizabeth T McNulty"));
@@ -28,7 +28,19 @@ public class SmokeTest {
 
         assertThat(setupPage, containsString("3188 Friendship Lane, Santa Clara, CA 95054"));
         assertThat(setupPage, containsString("Sherry D Presnell"));
-        assertThat(setupPage, containsString(">Limited Plus Report"));
+        assertThat(setupPage, containsString("Limited Plus Report"));
+
+        assertThat(setupPage, containsString("2834 Dawson Drive, Jacksonville, AR 72099"));
+        assertThat(setupPage, containsString("Elizabeth T McNulty"));
+        assertThat(setupPage, containsString("Limited Report"));
+
+        assertThat(setupPage, containsString("3630 Yorkshire Circle, Kitty Hawk, NC 27949"));
+        assertThat(setupPage, containsString("Timothy J Silva"));
+        assertThat(setupPage, containsString("Limited Report"));
+
+        assertThat(setupPage, containsString("3188 Friendship Lane, Santa Clara, CA 95054"));
+        assertThat(setupPage, containsString("Sherry D Presnell"));
+        assertThat(setupPage, containsString("Limited Plus Report"));
 
         assertThat(setupPage, containsString("680 Coburn Hollow Road, Peoria, IL 61614"));
         assertThat(setupPage, containsString("Debra C Clary"));
@@ -50,7 +62,7 @@ public class SmokeTest {
 
         assertThat(orderProcessingPage, containsString("3188 Friendship Lane, Santa Clara, CA 95054"));
         assertThat(orderProcessingPage, containsString("Sherry D Presnell"));
-        assertThat(orderProcessingPage, containsString(">Limited Plus Report"));
+        assertThat(orderProcessingPage, containsString("Limited Plus Report"));
 
         assertThat(orderProcessingPage, containsString("680 Coburn Hollow Road, Peoria, IL 61614"));
         assertThat(orderProcessingPage, containsString("Debra C Clary"));
@@ -62,7 +74,7 @@ public class SmokeTest {
     }
 
     private String url(String path) {
-        String baseUrl = "http://localhost:8080/order-processing";
+        String baseUrl = "http://localhost:8080";
         String envUrl = System.getenv("ORDER_PROCESSING_URL");
 
         if (envUrl != null && !envUrl.isEmpty()) {

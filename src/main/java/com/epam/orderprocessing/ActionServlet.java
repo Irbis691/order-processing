@@ -1,8 +1,10 @@
 package com.epam.orderprocessing;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Component;
 
-import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -10,14 +12,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+@Component
 public class ActionServlet extends HttpServlet {
 
     private static final long serialVersionUID = -5832176047021911038L;
 
-    public static int PAGE_SIZE = 5;
+    public static int PAGE_SIZE = 10;
 
-    @EJB
-    private OrderBean orderBean;
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -38,6 +41,9 @@ public class ActionServlet extends HttpServlet {
         } else if ("Remove".equals(action)) {
             removeOrderAction(request, response);
             return;
+        } else if ("RemoveAll".equals(action)) {
+            removeAllOrdersAction(response);
+            return;
         } else {
             anotherAction(request);
         }
@@ -54,15 +60,22 @@ public class ActionServlet extends HttpServlet {
         order.setCost(Integer.parseInt(request.getParameter("cost")));
         order.setSlaDays(Integer.parseInt(request.getParameter("slaDays")));
 
-        orderBean.addOrder(order);
+        orderRepository.save(order);
+
         response.sendRedirect("order-processing");
     }
 
     private void removeOrderAction(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String[] ids = request.getParameterValues("id");
         for (String id : ids) {
-            orderBean.deleteOrderId(new Long(id));
+            orderRepository.deleteById(new Long(id));
         }
+
+        response.sendRedirect("order-processing");
+    }
+
+    private void removeAllOrdersAction(HttpServletResponse response) throws IOException {
+        orderRepository.deleteAll();
 
         response.sendRedirect("order-processing");
     }
@@ -71,46 +84,60 @@ public class ActionServlet extends HttpServlet {
         String key = request.getParameter("key");
         String field = request.getParameter("field");
 
-        int count = 0;
+        long count = 0;
 
         if (StringUtils.isEmpty(key) || StringUtils.isEmpty(field)) {
-            count = orderBean.countAll();
+            count = orderRepository.count();
             key = "";
             field = "";
         } else {
-            count = orderBean.count(field, key);
+            if ("propertyName".equals(field)) {
+                count = orderRepository.countByPropertyNameContaining(key);
+            } else if ("borrowerName".equals(field)) {
+                count = orderRepository.countByBorrowerNameContaining(key);
+            } else if ("productType".equals(field)) {
+                count = orderRepository.countByProductTypeContaining(key);
+            }
         }
 
-        int page = 1;
+        int page = 0;
 
         try {
             page = Integer.parseInt(request.getParameter("page"));
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
-        int pageCount = (count / PAGE_SIZE);
+        int pageCount = (int) (count / PAGE_SIZE);
         if (pageCount == 0 || count % PAGE_SIZE != 0) {
             pageCount++;
         }
 
         if (page < 1) {
-            page = 1;
+            page = 0;
         }
 
         if (page > pageCount) {
             page = pageCount;
         }
 
-        int start = (page - 1) * PAGE_SIZE;
-        List<Order> range;
+        int start = page * PAGE_SIZE;
+        int end;
+        List<Order> range = null;
 
         if (StringUtils.isEmpty(key) || StringUtils.isEmpty(field)) {
-            range = orderBean.getAll(start, PAGE_SIZE);
+            range = orderRepository.findAll(new PageRequest(page, PAGE_SIZE)).getContent();
+            end = start + range.size();
         } else {
-            range = orderBean.findRange(field, key, start, PAGE_SIZE);
-        }
+            if ("propertyName".equals(field)) {
+                range = orderRepository.findByPropertyNameContaining(key, new PageRequest(page, PAGE_SIZE)).getContent();
+            } else if ("borrowerName".equals(field)) {
+                range = orderRepository.findByBorrowerNameContaining(key, new PageRequest(page, PAGE_SIZE)).getContent();
+            } else if ("productType".equals(field)) {
+                range = orderRepository.findByProductTypeContaining(key, new PageRequest(page, PAGE_SIZE)).getContent();
+            }
 
-        int end = start + range.size();
+            end = start + range.size();
+        }
 
         request.setAttribute("count", count);
         request.setAttribute("start", start + 1);
@@ -121,5 +148,4 @@ public class ActionServlet extends HttpServlet {
         request.setAttribute("key", key);
         request.setAttribute("field", field);
     }
-
 }

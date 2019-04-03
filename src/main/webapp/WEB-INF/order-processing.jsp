@@ -22,11 +22,9 @@
         }
     </style>
     <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
-
 </head>
 
 <body>
-
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
@@ -48,7 +46,6 @@
 </div>
 
 <div class="container">
-
     <h1>Order Processing</h1>
 
     <form class="order-input-form form-inline" action="order-processing"
@@ -57,8 +54,8 @@
         <input type="text" name="propertyName" placeholder="Property Name" size="30"/>
         <input type="text" name="borrowerName" placeholder="Borrower Name" size="50"/>
         <input type="text" name="productType" placeholder="Product Type" size="15"/>
-        <input type="text" name="cost" placeholder="Cost" size="4" style="width: 25px;"/>
-        <input type="text" name="slaDays" placeholder="SLA" size="7"/>
+        <input type="text" name="cost" placeholder="Cost" size="10" style="width: 50px;"/>
+        <input type="text" name="slaDays" placeholder="SLA" size="10" style="width: 50px;"/>
         <input type="submit" name="action" class="btn btn-primary" value="Add"/>
         <input type="button" class="btn btn-danger" onclick="location.href='?action=RemoveAll'" value="Remove All"/>
     </form>
@@ -93,7 +90,7 @@
                 Prev</a>&nbsp;
         </c:if>
         Showing records ${start} to ${end} of ${count}
-        <c:if test="${page < pageCount}">
+        <c:if test="${page < pageCount - 1}">
             &nbsp;<a href="<c:url value="order-processing"><c:param name="page" value="${page + 1}"/><c:param
                 name="field" value="${field}"/><c:param name="key"
                                                         value="${key}"/></c:url>">Next &gt;</a>
