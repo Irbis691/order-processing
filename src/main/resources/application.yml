@@ -10,3 +10,14 @@ spring:
   mvc.view:
     prefix: /WEB-INF/
     suffix: .jsp
+
+orderprocessing:
+  datasources:
+    orders:
+      url: jdbc:mysql://localhost:3306/orders?useSSL=false
+      username: root
+      password: root
+    documents:
+      url: jdbc:mysql://localhost:3306/documents?useSSL=false
+      username: root
+      password: root
